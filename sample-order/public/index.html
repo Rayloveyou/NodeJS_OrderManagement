@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TikTok Shop Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background-color: #000000;
+            color: #ffffff;
+            padding: 20px 0;
+            text-align: center;
+        }
+        h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        .logo {
+            font-weight: bold;
+            color: #25F4EE;
+        }
+        .dashboard {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+            padding: 20px;
+        }
+        .controls {
+            margin-bottom: 20px;
+        }
+        #exportBtn {
+            background-color: #25F4EE;
+            border: none;
+            color: #000000;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        #exportBtn:hover {
+            background-color: #20d8d8;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #000000;
+            color: #ffffff;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #ddd;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><span class="logo">TikTok</span> Shop Dashboard</h1>
+    </header>
+    <div class="container">
+        <div class="dashboard">
+            <div class="controls">
+                <button id="exportBtn">Export to Excel</button>
+            </div>
+            <table id="ordersTable">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody id="ordersBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        async function fetchOrders() {
+            try {
+                const response = await fetch('/api/orders');
+                const orders = await response.json();
+                const ordersBody = document.getElementById('ordersBody');
+                ordersBody.innerHTML = '';
+                orders.forEach(order => {
+                    const row = `
+                        <tr>
+                            <td>${order.id}</td>
+                            <td>${order.customer}</td>
+                            <td>${order.product}</td>
+                            <td>${order.quantity}</td>
+                            <td>$${order.total.toFixed(2)}</td>
+                        </tr>
+                    `;
+                    ordersBody.innerHTML += row;
+                });
+            } catch (error) {
+                console.error('Error fetching orders:', error);
+                alert('Failed to fetch orders. Please try again later.');
+            }
+        }
+
+        document.getElementById('exportBtn').addEventListener('click', () => {
+            window.location.href = '/api/export';
+        });
+
+        fetchOrders();
+    </script>
+</body>
+</html>
